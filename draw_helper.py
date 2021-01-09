@@ -7,7 +7,7 @@ import numpy as np
 def draw_bbox(img):
 
     plt.imshow(img)
-    lu, rd = plt.ginput(2)
+    lu, rd = plt.ginput(2, timeout=60)
     ld = (lu[0], rd[1])
     ru = (rd[0], lu[1])
 
@@ -68,9 +68,11 @@ def draw_corner(bbox_params, img):
     ax.imshow(img)
     vanishing_pt = plt.ginput(1)[0]
     corner_pts = []
+    corners = []
     for b_pt in bbox_params:
         x, y = to_corner(vanishing_pt, b_pt, w, h)
         corner_pts.append((x, y))
+        corners.append((y, x))
     for i in range(4):
         ax.plot((corner_pts[i][0], vanishing_pt[0]), (corner_pts[i][1], vanishing_pt[1]), '-', linewidth=2)
     lu, ld, ru, rd = bbox_params[0], bbox_params[1], bbox_params[2], bbox_params[3]
@@ -79,5 +81,5 @@ def draw_corner(bbox_params, img):
             (lu[0], ru[0]), (lu[1], ru[1]),
             (ld[0], rd[0]), (ld[1], rd[1]), '-', linewidth=2)
     fig.savefig('bbox_with_corner.png')
-    return
+    return corners
 
