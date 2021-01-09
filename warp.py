@@ -1,13 +1,14 @@
 import numpy as np
+import skimage.io as skio
 
 
-def inverse_warp(h, w, pts1, img1):
+def inverse_warp(h2, w2, pts1, img1, f_name):
     img1 = np.array(img1)
     h, w, _ = img1.shape
-    img2 = np.zeros((h, w, 3))
-    pts2 = [[0, 0], [h, 0], [0, w], [h, w]]
+    img2 = np.zeros((h2, w2, 3))
+    pts2 = [[h2, 0],[0, 0], [h2, w2],[0, w2]]
     matrix = computeH(pts2, pts1)
-    img2_pts = np.mgrid[0:h, 0:w]
+    img2_pts = np.mgrid[0:h2, 0:w2]
     img2_pts = np.vstack((img2_pts[0].ravel(), img2_pts[1].ravel()))
     pts_matrix = np.vstack((img2_pts, np.ones((img2_pts.shape[1],), dtype=int)))
     img1_pts = matrix @ pts_matrix
@@ -15,9 +16,8 @@ def inverse_warp(h, w, pts1, img1):
     img1_pts[0, :] = np.clip(img1_pts[0, :], 0, h-1)
     img1_pts[1, :] = np.clip(img1_pts[1, :], 0, w-1)
     img2[img2_pts[0, :].astype(int), img2_pts[1, :].astype(int)] = img1[img1_pts[0, :], img1_pts[1, :]]
+    skio.imsave(f_name, img2.astype(np.uint8))
     return img2
-
-
 
 
 def computeH(pts1, pts2):
